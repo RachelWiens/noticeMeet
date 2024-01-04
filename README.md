@@ -26,18 +26,18 @@ As long as the tab is left open, a new tab should pop open and grab your browser
 
 ## FAQ
 
-> Can you play a sound when the notification loads?*
+> Can you play a sound when the notification loads?
 
 Unfortunately no. [Chrome disables playing sounds](https://developer.chrome.com/blog/autoplay/#audiovideo_elements) until the user interacts with the page, and this applies when tabs open or refresh, even if the user interacted with the page in the past.
 
-> The notification page burns my eyes!!! Can you change it?*
+> The notification page burns my eyes!!! Can you change it?
 
 The notification being eye-catchingly ugly is generally working as intended. The notification also needs to look different from any other program/page you are likely to be working on. You are welcome to submit pull requests suggesting improvements the UI and/or edit the look of the page on your own script to suit your preferences.
 
-> Does this work with calendars other than Google Calendar?*
+> Does this work with calendars other than Google Calendar?
 
 No, but I welcome pull requests.
 
-> I have multiple Google calendars - which calendar does it use?*
+> I have multiple Google calendars - which calendar does it use?
 
 It uses whichever calendar is considered the primary calendar for the account you grant the web app permissions for.
