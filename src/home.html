@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <center>
+    <p>Don't be late!</p>
+    <h1>Upcoming Events</h1>
+    <div>
+    <table>
+      <? const formattedEvents = getFormattedUpcomingEvents( /* minutesFromNow= */ getMinutesForUpcomingEvents() );
+        for (var i = 0; i < formattedEvents.length; i++) {  
+      ?>
+      <tr><td><?= (new Date(formattedEvents[i].time)).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) ?>&nbsp;</td><td><?= formattedEvents[i].title ?></td></tr>
+      <? } ?>
+    </table>
+    </div>
+    <br>
+    <button id="trigger_btn">Manually Trigger</button>
+    <br><br>
+
+     <script>
+      /* Run at start-up ---------------------------------------------------------------- */
+      document.getElementById("trigger_btn").addEventListener("click",openNotificationTab);
+
+      /**
+       * Periodically poll the user's calendar for upcoming events and then schedule notifications for them.
+       * 
+       * Implemented via client-side JS rather than triggers, because that allows us to schedule actions rather than needing to poll more frequently.
+       */
+      google.script.run.withSuccessHandler(
+        function (minutesBeforeToNotify) {
+          // Call the function to schedule notifications for the next hour, and schedule the same function for every following hour.
+          const pollIntervalInMinutes = 60;
+          checkAndNotifyIfMeetingsUpcoming(minutesBeforeToNotify, pollIntervalInMinutes)
+          setInterval(
+            function () { checkAndNotifyIfMeetingsUpcoming(minutesBeforeToNotify, pollIntervalInMinutes) },
+            /* milliseconds= */ pollIntervalInMinutes * 60 * 1000 // pollIntervalInMinutes * 60 seconds/minute * 1000 milliseconds/second 
+          );
+        }
+      ).getMinutesToNotify();
+    
+      /* Client-side functions library -------------------------------------------------- */
+
+      /**
+       * Check for events between now and pollIntervalInMinutes from now, and schedule notifications for them.
+       * 
+       * @param {Integer} minutesBeforeToNotify - how many minutes before the event to notify the user.
+       * @param {Integer} pollIntervalInMinutes - what window of time to schedule event notifications for.
+       */
+      function checkAndNotifyIfMeetingsUpcoming(minutesBeforeToNotify, pollIntervalInMinutes) {
+        google.script.run.withSuccessHandler(
+            function (startTimes) {
+              notifyAtTimes(minutesBeforeToNotify, startTimes)
+            } 
+        ).getUpcomingEventsStartTimes(pollIntervalInMinutes);
+      }
+
+      /**
+       * Schedule notifications for each of the upcoming times. Does not notify for events that are already past their start time minus the notification delay.
+       * 
+       *  @param {Integer} minutesBeforeToNotify - how many minutes before the event to notify the user.
+       *  @param {Integer[]} startTimes - array of times to notify for, in millis since the epoch.
+       */
+      function notifyAtTimes(minutesBeforeToNotify, startTimes) {
+        const now = Date.now();
+        for (i in startTimes) {
+          const start = startTimes[i];
+          const delay = start - now - (minutesBeforeToNotify * 60 * 1000);
+          if (delay > 0) {
+            setTimeout(openNotificationTab, delay)
+          }
+        }
+      }
+
+      /**
+       * Open a new tab with the upcoming meeting notification.
+       */
+      function openNotificationTab() {
+        google.script.run.withSuccessHandler( 
+          function (url) {
+            window.open(url + "?notification=true", '_blank').focus();
+          }
+        ).getScriptUrl();
+      }
+    </script>
+    </center>
+  </body>
+</html>
