@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body style="background-color:#FF47FA; font-family: 'Comic Sans MS', 'Comic Sans', cursive;">
+    <center>
+    <h1>Don't be late!</h1>
+    <div>
+    <table>
+      <? const formattedEvents = getFormattedEventsInNotificationPeriod();
+        for (var i = 0; i < formattedEvents.length; i++) {  
+      ?>
+      <tr><td><?= (new Date(formattedEvents[i].time)).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) ?></td><td><?= formattedEvents[i].title ?></td></tr>
+      <? } ?>
+    </table>
+    <br>
+
+    <img id="notification_img" src="" alt="distracting image">
+    <br>
+    </div>
+    </center>
+
+    <script>
+      /* Run at start-up ---------------------------------------------------------------- */
+      google.script.run.withSuccessHandler(
+        function (imageUrl) {
+          document.getElementById("notification_img").src = imageUrl;
+        }
+      ).getNotificationImageUrl();
+    </script>
+  </body>
+</html>
