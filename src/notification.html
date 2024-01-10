@@ -16,18 +16,9 @@
     </table>
     <br>
 
-    <img id="notification_img" src="" alt="distracting image">
+    <img id="notification_img" src="https://i.kym-cdn.com/photos/images/newsfeed/000/149/666/62a.jpg" alt="distracting image">
     <br>
     </div>
     </center>
-
-    <script>
-      /* Run at start-up ---------------------------------------------------------------- */
-      google.script.run.withSuccessHandler(
-        function (imageUrl) {
-          document.getElementById("notification_img").src = imageUrl;
-        }
-      ).getNotificationImageUrl();
-    </script>
   </body>
 </html>
