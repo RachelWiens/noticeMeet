@@ -8,9 +8,10 @@ Notice Meet is a web app that makes a more visually obvious notification wheneve
 
 ### One-time Set-up
 1. Copy-paste the code from the `src` folder into files with matching names in [Google Apps Script](https://www.google.com/script/start/).
-2. Configure the script parameters in the project settings. The list of parameters you need to create is listed at the top of the `src/code.gs` file.
+2. Configure the script parameters in the project settings. The list of parameters you need to create is listed at the top of the `src/properties.gs` file.
 3. Deploy the web app via the Deploy button.
 4. Open the deployed web app's URL in your web browser. If requested, grant the app read permission for your calendar.
+5. \[Optional\] Configure your user settings in the web app's UI.
 
 ### Everyday Use
 1. Open the deployed web app's URL in your web browser.
