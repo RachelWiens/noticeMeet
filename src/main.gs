@@ -1,70 +1,7 @@
 /**
- * Make sure to fill out the following script parameters in your project's settings:
- *   - MINUTES_FOR_UPCOMING_EVENTS: Controls how far forward your event list on the homepage shows. Doesn't impact polling frequency or notification behaviour. 
- *   - MINUTES_BEFORE_TO_NOTIFY: How many minutes before an event to show the notification.
- *   - APP_TITLE: The title of the application. Used as the name of the browser tab.
- *   - FAVICON_URL: The URL of the favicon image.
- *   - NOTIFICATION_IMAGE_URL: The image to show on the notification page.
- *        * Alternately, you can hard-code the image to make it load faster
- * 
- * Note: To get the URL of an image hosted on Google Drive, see https://www.labnol.org/google-drive-image-hosting-220515#alternate-approach.
+ * Further improvements:
+ *  - Display times in UI in the viewer's actual locale rather than the script owner's (does the LocaleToString run server-side?)
  */
-
-/**
- * Get the URL for the Google Apps Script running as a WebApp.
- * 
- * @returns {String}
- */
-function getScriptUrl() {
- return ScriptApp.getService().getUrl();
-}
-
-/**
- * Get the minute-sized width of window for which to fetch upcoming events, starting from now. 
- * 
- * @returns {Number}
- */
-function getMinutesForUpcomingEvents() {
-  var minutes = PropertiesService.getScriptProperties().getProperty("MINUTES_FOR_UPCOMING_EVENTS");
-  return Number(minutes);
-}
-
-/**
- * Get how many minutes before the event starts we should notify the user. 
- * 
- * @returns {Number}
- */
-function getMinutesToNotify() {
-  var minutes = PropertiesService.getScriptProperties().getProperty("MINUTES_BEFORE_TO_NOTIFY");
-  return Number(minutes);
-}
-
-/**
- * Get the title of the web app.
- * 
- * @returns {String}
- */
-function getAppTitle() {
-  return PropertiesService.getScriptProperties().getProperty("APP_TITLE");
-}
-
-/**
- * Get the favicon URL.
- * 
- * @returns {String}
- */
-function getFaviconUrl() {
-  return PropertiesService.getScriptProperties().getProperty("FAVICON_URL");
-}
-
-/**
- * Get the notification image URL.
- * 
- * @returns {String}
- */
-function getNotificationImageUrl() {
-  return PropertiesService.getScriptProperties().getProperty("NOTIFICATION_IMAGE_URL");
-}
 
 /**
  * Pull out the event fields we want to present to the user.
@@ -101,8 +38,8 @@ function isAnyTimeWithinNotificationPeriod(startTimes) {
 /**
  * Get a limited number of events from the user's default calendar, which they have not declined, between start and end times.
  * 
- *  @param {Date} start - start of window to fetch events for.
- *  @param {Date} end - end of window to fetch events for.
+ *  @param {Date} start - start of window to fetch events for, inclusive.
+ *  @param {Date} end - end of window to fetch events for, exclusive.
  *  @returns {CalendarEvent[]}
  */
 function getEventsBetween(start, end) {
@@ -144,7 +81,7 @@ function getUpcomingEvents(minutesFromNow) {
  */
 function getFormattedEventsInNotificationPeriod() {
   const now = Date.now();
-  const minutesBeforeToNotify = PropertiesService.getScriptProperties().getProperty("MINUTES_BEFORE_TO_NOTIFY");
+  const minutesBeforeToNotify = getMinutesToNotify() + 1; // Add 1 minute since the getEventsBetween end time is exclusive.
   const start = new Date(now - (minutesBeforeToNotify * 60 * 1000));
   const end = new Date(now + (minutesBeforeToNotify * 60 * 1000));
   const eventsInWIndow = getEventsBetween(start, end);
