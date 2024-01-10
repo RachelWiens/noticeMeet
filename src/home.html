@@ -4,33 +4,45 @@
     <base target="_top">
   </head>
   <body>
-    <center>
+    <div style="text-align:center; margin:auto; width:fit-content;">
     <p>Don't be late!</p>
     <h1>Upcoming Events</h1>
-    <div>
-    <table>
+    <center>
+    <table style="text-align:left;">
       <? const formattedEvents = getFormattedUpcomingEvents( /* minutesFromNow= */ getMinutesForUpcomingEvents() );
         for (var i = 0; i < formattedEvents.length; i++) {  
       ?>
       <tr><td><?= (new Date(formattedEvents[i].time)).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) ?>&nbsp;</td><td><?= formattedEvents[i].title ?></td></tr>
       <? } ?>
     </table>
-    </div>
+    </center>
+
     <br>
     <button id="trigger_btn">Manually Trigger</button>
     <br><br>
+    </div>
+
+    <hr>
+    <div style="text-align:left; margin:auto; width:fit-content; border-style:solid; padding:14px; padding-top:0;">
+      <h2>User Configuration</h2>
+      How many minutes before the meeting do you want to be notified? <input id="minuts_to_notify_input" type="number" value="3" style="width:2em;"></input>
+    </div>
 
      <script>
+
       /* Run at start-up ---------------------------------------------------------------- */
       document.getElementById("trigger_btn").addEventListener("click",openNotificationTab);
 
       /**
-       * Periodically poll the user's calendar for upcoming events and then schedule notifications for them.
-       * 
        * Implemented via client-side JS rather than triggers, because that allows us to schedule actions rather than needing to poll more frequently.
        */
       google.script.run.withSuccessHandler(
         function (minutesBeforeToNotify) {
+          // Update the configuration displayed to the user, and make it editable.
+          document.getElementById("minuts_to_notify_input").value = minutesBeforeToNotify;
+          document.getElementById("minuts_to_notify_input").addEventListener("change", updateMinutesToNotify);
+
+          // Periodically poll the user's calendar for upcoming events and then schedule notifications for them.
           // Call the function to schedule notifications for the next hour, and schedule the same function for every following hour.
           const pollIntervalInMinutes = 60;
           checkAndNotifyIfMeetingsUpcoming(minutesBeforeToNotify, pollIntervalInMinutes)
@@ -84,7 +96,15 @@
           }
         ).getScriptUrl();
       }
+
+      /**
+       * Update the user's minutes to notify property.
+       */
+      function updateMinutesToNotify() {
+        const minutesToNotify = document.getElementById("minuts_to_notify_input").value;
+        google.script.run.setMinutesToNotify(minutesToNotify);
+      }
+
     </script>
-    </center>
   </body>
 </html>
