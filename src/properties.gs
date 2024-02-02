@@ -43,6 +43,25 @@ function getMinutesToNotify() {
   }
 }
 
+
+/**
+ * Get titles of events that we should skip notifying the user about. 
+ * 
+ * @returns {String[]}
+ */
+function getSilentEvents() {
+  var silentEventsString = PropertiesService.getUserProperties().getProperty("SILENT_EVENTS");
+  if (silentEventsString === null) {
+    return [];
+  } else {
+    // Split on commas and trim surrounding whitespace
+    const silentEvents = silentEventsString.split(',').map(function(title) {
+      return title.trim();
+    });
+    return silentEvents;
+  }
+}
+
 /**
  * Get the title of the web app.
  * 
@@ -69,4 +88,17 @@ function getFaviconUrl() {
 function setMinutesToNotify(minutes) {
   const userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty('MINUTES_BEFORE_TO_NOTIFY', minutes);
+}
+
+/**
+ * Store titles of events that we should skip notifying the user about.
+ * 
+ * silentEventTitles should be a single string with comma-separated event titles. E.g. "name 1, name 2"
+ * Whitespace between words is preserved but around titles is trimmed.
+ * 
+ * @param {String} - silentEventTitles
+ */
+function setSilentEvents(silentEventTitles) {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty('SILENT_EVENTS', silentEventTitles);
 }
