@@ -26,9 +26,12 @@
     <div style="text-align:left; margin:auto; width:fit-content; border-style:solid; padding:14px; padding-top:0;">
       <h2>User Configuration</h2>
       How many minutes before the meeting do you want to be notified? <input id="minuts_to_notify_input" type="number" value="3" style="width:2em;"></input>
+      <br><br>
+      Any events you don't want to be notified for? Enter their titles in  comma-separated, case-sensitive format. (E.g. "Test, Ignored Event")
+      <input id="silent_events_input" type="text" value=""></input>
     </div>
 
-     <script>
+    <script>
 
       /* Run at start-up ---------------------------------------------------------------- */
       document.getElementById("trigger_btn").addEventListener("click",openNotificationTab);
@@ -52,6 +55,14 @@
           );
         }
       ).getMinutesToNotify();
+
+      google.script.run.withSuccessHandler(
+        function (silentEvents) {
+          // Update the configuration displayed to the user, and make it editable.
+          document.getElementById("silent_events_input").value = silentEvents.toString();
+          document.getElementById("silent_events_input").addEventListener("change", updateSilentEvents);
+        }
+      ).getSilentEvents();
     
       /* Client-side functions library -------------------------------------------------- */
 
@@ -103,6 +114,14 @@
       function updateMinutesToNotify() {
         const minutesToNotify = document.getElementById("minuts_to_notify_input").value;
         google.script.run.setMinutesToNotify(minutesToNotify);
+      }
+
+      /**
+       * Update the user's silenced events property.
+       */
+      function updateSilentEvents() {
+        const silentEvents = document.getElementById("silent_events_input").value;
+        google.script.run.setSilentEvents(silentEvents);
       }
 
     </script>
