@@ -36,7 +36,7 @@ function isAnyTimeWithinNotificationPeriod(startTimes) {
 }
 
 /**
- * Get a limited number of events from the user's default calendar, which they have not declined, between start and end times.
+ * Get a limited number of events from the user's default calendar, which they have not declined or silenced, between start and end times.
  * 
  *  @param {Date} start - start of window to fetch events for, inclusive.
  *  @param {Date} end - end of window to fetch events for, exclusive.
@@ -44,12 +44,13 @@ function isAnyTimeWithinNotificationPeriod(startTimes) {
  */
 function getEventsBetween(start, end) {
   const allEvents = CalendarApp.getDefaultCalendar().getEvents(start,  end, {max: 20});
+  const silentEventTitles = getSilentEvents();
   // The statusFilters parameter on the API call doesn't seem to filter results according to the current user's status, 
   // so filter out declined events manually.
   const interestedEvents = [];
   for (i in allEvents) {
     const e = allEvents[i];
-    if (e.getMyStatus() != CalendarApp.GuestStatus.NO) {
+    if (e.getMyStatus() != CalendarApp.GuestStatus.NO && !silentEventTitles.includes(e.getTitle())) {
       interestedEvents.push(e);
     }
   }
